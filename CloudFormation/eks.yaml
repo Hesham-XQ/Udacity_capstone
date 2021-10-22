@@ -99,7 +99,7 @@ Resources:
     Metadata:
       Comment: Subnet 01
     Properties:
-      AvailabilityZone: us-east-1
+      AvailabilityZone: us-east-1a
    
       CidrBlock:
         Ref: Subnet01Block
@@ -114,7 +114,7 @@ Resources:
     Metadata:
       Comment: Subnet 02
     Properties:
-      AvailabilityZone: us-east-2
+      AvailabilityZone: us-east-1b
    
       CidrBlock:
         Ref: Subnet02Block
@@ -125,12 +125,12 @@ Resources:
         Value: !Sub "${AWS::StackName}-Subnet02"
 
   Subnet03:
-    Condition: HasMoreThan2Azs
+    #Condition: HasMoreThan2Azs
     Type: AWS::EC2::Subnet
     Metadata:
       Comment: Subnet 03
     Properties:
-      AvailabilityZone: us-west-1
+      AvailabilityZone: us-east-1c
 
       CidrBlock:
         Ref: Subnet03Block
