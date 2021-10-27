@@ -20,7 +20,7 @@ pipeline {
 
         stage('Set K8S Context'){
             steps {
-                withAWS(credentials:'aws-credentials'){
+                withAWS(credentials:'25967a97-5647-4269-a6cb-a88477ad3460'){
                     sh "kubectl config set-context arn:aws:eks:us-east-1:089377575339:cluster/UdacityCluster"
                 }
             }
@@ -37,7 +37,7 @@ pipeline {
         stage('Upload Green Image to Docker-Hub'){
             steps{
                 script{
-                    docker.withRegistry('', registryCredential){
+                    docker.withRegistry('', docker-registery){
                         greenDockerImage.push()
                     }
                 }
@@ -52,7 +52,7 @@ pipeline {
 
         stage('Green Deployment'){
             steps {
-                withAWS(credentials:'aws-credentials'){
+                withAWS(credentials:'25967a97-5647-4269-a6cb-a88477ad3460'){
                     sh "kubectl apply -f k8s/Green/green-deployment.yaml && kubectl apply -f k8s/Green/test-service.yaml"
                 }
             }
@@ -66,7 +66,7 @@ pipeline {
 
         stage('Switch Traffic To Green Deployment'){
             steps{
-                withAWS(credentials:'aws-credentials'){
+                withAWS(credentials:'25967a97-5647-4269-a6cb-a88477ad3460'){
                     sh "kubectl apply -f k8s/Green/green-service.yaml"
                 }
             }
@@ -83,7 +83,7 @@ pipeline {
         stage('Upload Blue Image to Docker-Hub'){
             steps{
                 script{
-                    docker.withRegistry('', registryCredential){
+                    docker.withRegistry('', docker-registery){
                         blueDockerImage.push()
                     }
                 }
@@ -98,7 +98,7 @@ pipeline {
 
         stage('Blue Deployment'){
             steps {
-                withAWS(credentials:'aws-credentials'){
+                withAWS(credentials:'25967a97-5647-4269-a6cb-a88477ad3460'){
                     sh "kubectl apply -f k8s/Blue"
                 }
             }
