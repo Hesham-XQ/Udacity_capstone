@@ -29,19 +29,14 @@ pipeline {
 
         stage('Build Green Docker Image') {
             steps {
-                script{
-                    greenDockerImage = docker.build "heshamxq/flask-app"
-                }
+                sh 'docker build -t heshamxq/flask-app .'
             }
         }
 
         stage('Upload Green Image to Docker-Hub'){
             steps{
-                script{
-                    docker.withRegistry('', docker-registery){
-                        greenDockerImage.push()
-                    }
-                }
+                sh 'docker login -u heshamxq -p Hpassvf@90'
+                sh 'docker push heshamxq/flask-app'
             }
         }
 
