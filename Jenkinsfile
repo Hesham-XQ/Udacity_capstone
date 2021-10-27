@@ -6,9 +6,7 @@ pipeline {
     }
     agent any 
     stages {
-        stage ("Checkout") {
-            git branch: 'main',
-        }
+
         stage('Install Requirements'){
             steps{
                 sh "pip3 install -r requirements.txt"
