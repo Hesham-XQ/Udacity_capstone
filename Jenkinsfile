@@ -22,7 +22,7 @@ pipeline {
         stage('Set K8S Context'){
             steps {
                 withAWS(credentials:'25967a97-5647-4269-a6cb-a88477ad3460'){
-                    sh "kubectl config set-context arn:aws:eks:us-east-1:089377575339:cluster/UdacityCluster"
+                    sh "kubectl config set-context eks-cluster@uda-cap.us-east-1.eksctl.io"
                 }
             }
         }
