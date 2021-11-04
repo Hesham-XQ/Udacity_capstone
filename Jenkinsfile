@@ -54,7 +54,7 @@ pipeline {
         stage('Checking rollout') {
               steps{
                   echo 'Checking rollout...'
-                  withAWS(credentials: 'aws-static', region: 'us-east-1') {
+                  withAWS(credentials: 'awscred', region: 'us-east-1') {
                      sh "kubectl rollout status deployments/flask-app"
                   }
               }
