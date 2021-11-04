@@ -19,13 +19,7 @@ pipeline {
             }
         }
 
-        stage('Set K8S Context'){
-            steps {
-                withAWS(credentials:'25967a97-5647-4269-a6cb-a88477ad3460'){
-                    sh "kubectl config set-context eks-cluster@uda-cap.us-east-1.eksctl.io"
-                }
-            }
-        }
+
 
         stage('Build Docker Image') {
             steps {
@@ -44,6 +38,14 @@ pipeline {
         stage('Clean Up Green Image'){
             steps { 
                 sh "docker rmi heshamxq/flask-app:latest" 
+            }
+        }
+
+        stage('Set K8S Context'){
+            steps {
+                withAWS(credentials:'25967a97-5647-4269-a6cb-a88477ad3460'){
+                    sh "kubectl config set-context eks-cluster@uda-cap.us-east-1.eksctl.io"
+                }
             }
         }
 
