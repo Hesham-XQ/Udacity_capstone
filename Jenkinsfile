@@ -35,72 +35,35 @@ pipeline {
               }
         }
 
-        stage('Clean Up Green Image'){
-            steps { 
-                sh "docker rmi heshamxq/flask-app:latest" 
-            }
+
+        stage('Deploying') {
+              steps{
+                  echo 'Deploying to AWS...'
+                  withAWS(credentials: 'awscred', region: 'us-east-1') {
+                      sh "aws eks --region us-east-1 update-kubeconfig --name udacity-capstone"
+                      sh "kubectl config use-context arn:aws:eks:us-east-1:559740661459:cluster/udacity-capstone"
+                      sh "kubectl apply -f capstone-deploy.yaml"
+                      sh "kubectl get nodes"
+                      sh "kubectl get deployments"
+                      sh "kubectl get pod -o wide"
+                      sh "kubectl get service/capstone-flask-app-service"
+                  }
+              }
         }
 
-        stage('Set K8S Context'){
-            steps {
-                withAWS(credentials:'25967a97-5647-4269-a6cb-a88477ad3460'){
-                    sh "kubectl config set-context eks-cluster@uda-cap.us-east-1.eksctl.io"
-                }
-            }
+        stage('Checking rollout') {
+              steps{
+                  echo 'Checking rollout...'
+                  withAWS(credentials: 'aws-static', region: 'us-east-1') {
+                     sh "kubectl rollout status deployments/flask-app"
+                  }
+              }
         }
-
-        stage('Green Deployment'){
-            steps {
-                withAWS(credentials:'25967a97-5647-4269-a6cb-a88477ad3460'){
-                    sh "kubectl apply -f k8s/Green/green-deployment.yaml && kubectl apply -f k8s/Green/test-service.yaml"
-                }
-            }
-        }
-
-        stage('Test Green Deployment'){
-            steps{
-                input "Deploy to production?"
-            }
-        }
-
-        stage('Switch Traffic To Green Deployment'){
-            steps{
-                withAWS(credentials:'25967a97-5647-4269-a6cb-a88477ad3460'){
-                    sh "kubectl apply -f k8s/Green/green-service.yaml"
-                }
-            }
-        }
-
-        stage('Build Blue Docker Image') {
-            steps {
-                script{
-                    blueDockerImage = docker.build "heshamxq/flask-app"
-                }
-            }
-        }
-
-        stage('Upload Blue Image to Docker-Hub'){
-            steps{
-                script{
-                    docker.withRegistry('', docker-registery){
-                        blueDockerImage.push()
-                    }
-                }
-            }
-        }
-
-        stage('Clean Up Blue Image'){
-            steps { 
-                sh "docker rmi heshamxq/flask-app:latest" 
-            }
-        }
-
-        stage('Blue Deployment'){
-            steps {
-                withAWS(credentials:'25967a97-5647-4269-a6cb-a88477ad3460'){
-                    sh "kubectl apply -f k8s/Blue"
-                }
-            }
+        stage("Cleaning up") {
+              steps{
+                    echo 'Cleaning up...'
+                    sh "docker system prune"
+              }
         }
     }
 }
