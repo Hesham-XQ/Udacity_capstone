@@ -27,17 +27,18 @@ pipeline {
             }
         }
 
-        stage('Build Green Docker Image') {
+        stage('Build Docker Image') {
             steps {
                 sh 'docker build -t heshamxq/flask-app .'
             }
         }
 
-        stage('Upload Green Image to Docker-Hub'){
-            steps{
-                sh 'docker login -u heshamxq -p Hpassvf@90'
-                sh 'docker push heshamxq/flask-app'
-            }
+        stage('Upload Image to Docker-Hub'){
+            steps {
+                  withDockerRegistry([url: "", credentialsId: "dockerhub"]) {
+                      sh 'docker push heshamxq/flask-app'
+                  }
+              }
         }
 
         stage('Clean Up Green Image'){
